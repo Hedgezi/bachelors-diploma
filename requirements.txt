@@ -1,0 +1,6 @@
+pydantic<2.8
+
+scikit-learn
+matplotlib
+
+cesnet-datazoo
