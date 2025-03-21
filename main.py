@@ -1,9 +1,8 @@
-from sklearn.cluster import DBSCAN, AgglomerativeClustering
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
 
-from clustering import clustering_params_list_fit_predict
+from clustering import AgglomerativeAlgorithm, AffinityClusteringAlgorithm
 from dataset import prepare_dataset
 from feature_engineering import add_new_features
 from preprocessing import preprocess_data
@@ -17,14 +16,15 @@ APPS_TO_EXTRACT = ("alza-webapi", "drmax", "dns-doh", "flightradar24",
 
 def main():
     features_array, app_array = preprocess_data(add_new_features(prepare_dataset(FEATURES_TO_EXTRACT, APPS_TO_EXTRACT)), FEATURES_TO_EXTRACT)
-    params = {
-        "n_clusters": [30, 60, 90, 100, 120],
-        "linkage": ["ward", "complete", "average", "single"],
-    }
-    labels = clustering_params_list_fit_predict(AgglomerativeClustering, features_array, params)
-    for label, param_variant in zip(labels, itertools.product(*params.values())):
-        print(param_variant)
-        evaluate_clustering(app_array, label, param_variant)
+    algo = AffinityClusteringAlgorithm()
+    app_array = algo.modify_app_array(app_array)
+    for result in algo.generate_multiple_clustering_results(features_array):
+        if result is None:
+            break
+
+        print(algo.print_parameters(result))
+        print(f"Clusters count: {len(np.unique(result.labels))}")
+        evaluate_clustering(app_array, result.labels, f"")
         print("")
 
 
