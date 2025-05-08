@@ -175,3 +175,5 @@ cython_debug/
 
 # DataZoo data
 data/
+
+images/
